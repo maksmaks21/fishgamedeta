@@ -53,6 +53,7 @@ class GameSprite(sprite.Sprite):
         self.speed = pl_speed
         self.size_x = size_x
         self.count = 0
+        self.auto = False
     def reset(self):
         wn.blit(self.image,(self.rect.x,self.rect.y))
         # draw.rect(wn,(45,78,34),self.rect)
@@ -77,6 +78,20 @@ class Player(GameSprite):
             self.rect.y -= self.speed
         if keys[K_s] and self.rect.y < 500 - 50:
             self.rect.y += self.speed
+
+        if keys[K_q]:
+            self.auto = True
+        if keys[K_e]:
+            self.auto = False
+            
+    def auto_swimm(self):
+        if self.auto:
+            self.rect.x -= self.speed
+            if self.rect.x < -90:
+                self.speed *=-1
+            if self.rect.x > 590:
+                self.speed *=-1
+
 bouble_count = 110    
 boubles = sprite.Group()
 for i in range(1):
@@ -113,6 +128,13 @@ coin_f3 = GameSprite("coinicon.png",400,300,120,90,8)
 
 red_show= 0
 
+fish_yellow_s = Player("yellowfish_1.jpg",485,310,120,74,6)     
+fish_red_s = Player("redfish1.jpg",485,210,120,74,6) 
+fish_orange_s = Player("orangefish1.jpg",485,100,120,74,6)
+
+fish_red_update = 0
+fish_oran_update = 1
+
 while game:
     for e in event.get():
         if e.type == QUIT:
@@ -126,7 +148,7 @@ while game:
                 shop = 0
                 fish_p = 1
 
-            elif coin_f1:
+            elif coin_f1.collidepoint and shop:
                 if bouble_count > 100:
                     red_show =1
                     bouble_count -=100
@@ -134,11 +156,21 @@ while game:
         wn.blit(background,(0,0))
         shop_icon.reset()
         fish.animation(orangefish_list)
-        fish.update()
+        if fish_oran_update:
+            fish.update()
+        fish.auto_swimm()
         boubles.draw(wn)
         coin_icon.reset()
         text_score = font1.render(str(bouble_count),1,(255,255,255))
         wn.blit(text_score,(25,45))
+  
+    keys = key.get_pressed()
+        if keys[K_1]:
+            fish_oran_update = 1
+            fish_red_update = 0
+        if keys[K_2]:
+            fish_oran_update = 0
+            fish_red_update = 1
 
         polka=sprite.spritecollide(fish,boubles,True)
         if polka:
@@ -148,6 +180,7 @@ while game:
 
         if red_show:
             fish_red.animation(redfish_list)
+        if fish_red_update:
             fish_red.update()
     if shop:
         wn.blit(background_shop,(0,0))
@@ -155,9 +188,9 @@ while game:
         text_score = font1.render(str(bouble_count),1,(255,255,255))
         wn.blit(text_score,(25,45))
         exit_icon.reset()
-        fish_red.animation(orangefish_list)
-        fish_orange.animation(redfish_list)
-        fish_yellow.animation(yellowfish_list)
+        fish_red_s.animation(orangefish_list)
+        fish_orange_s.animation(redfish_list)
+        fish_yellow_s.animation(yellowfish_list)
         shop_text.reset()
 
         coin_f1.reset()
