@@ -83,6 +83,7 @@ class Player(GameSprite):
             self.auto = True
         if keys[K_e]:
             self.auto = False
+            self.speed = abs(self.speed)
             
     def auto_swimm(self):
         if self.auto:
@@ -92,7 +93,7 @@ class Player(GameSprite):
             if self.rect.x > 590:
                 self.speed *=-1
 
-bouble_count = 110    
+bouble_count = 1000    
 boubles = sprite.Group()
 for i in range(1):
     bouble = GameSprite("f66bb4d63b517c425adae2e4d66cd68a-removebg-preview.png",randint(0,600),210,70,80,6) 
@@ -100,7 +101,7 @@ for i in range(1):
     
 
 
-fish_yellow = Player("yellowfish_1.jpg",485,310,120,74,6)     
+fish_yellow = Player("yellowfish_1.jpg",485,310,120,74,8)     
 fish_red = Player("redfish1.jpg",485,210,120,74,6) 
 fish_orange = Player("orangefish1.jpg",485,100,120,74,6) 
 
@@ -125,13 +126,14 @@ coin_f2 = GameSprite("coinicon.png",400,200,120,90,8)
 coin_f3 = GameSprite("coinicon.png",400,300,120,90,8)
 
 
-
+yellow_show= 0
 red_show= 0
 
 fish_yellow_s = Player("yellowfish_1.jpg",485,310,120,74,6)     
 fish_red_s = Player("redfish1.jpg",485,210,120,74,6) 
 fish_orange_s = Player("orangefish1.jpg",485,100,120,74,6)
 
+fish_yellow_update = 0
 fish_red_update = 0
 fish_oran_update = 1
 
@@ -148,10 +150,15 @@ while game:
                 shop = 0
                 fish_p = 1
 
-            elif coin_f1.collidepoint and shop:
+            elif coin_f1.collidepoint(x,y) and shop and red_show ==0:
                 if bouble_count > 100:
                     red_show =1
                     bouble_count -=100
+
+            elif coin_f3.collidepoint(x,y) and shop and yellow_show ==0:
+                if bouble_count > 500:
+                    yellow_show =1
+                    bouble_count -=500
     if  fish_p:
         wn.blit(background,(0,0))
         shop_icon.reset()
@@ -164,17 +171,35 @@ while game:
         text_score = font1.render(str(bouble_count),1,(255,255,255))
         wn.blit(text_score,(25,45))
   
-    keys = key.get_pressed()
+        keys = key.get_pressed()
         if keys[K_1]:
             fish_oran_update = 1
             fish_red_update = 0
+            fish_yellow_update = 0
         if keys[K_2]:
             fish_oran_update = 0
             fish_red_update = 1
+            fish_yellow_update = 0
+        if keys[K_3]:
+            fish_oran_update = 0
+            fish_red_update = 0
+            fish_yellow_update = 1
 
         polka=sprite.spritecollide(fish,boubles,True)
         if polka:
-            bouble = GameSprite("f66bb4d63b517c425adae2e4d66cd68a-removebg-preview.png",randint(0,600),randint(0,210),70,80,6) 
+            bouble = GameSprite("f66bb4d63b517c425adae2e4d66cd68a-removebg-preview.png",randint(0,600),randint(70,210),70,80,6) 
+            boubles.add(bouble)
+            bouble_count+=1
+
+        polka2=sprite.spritecollide(fish_red,boubles,True)
+        if polka2:
+            bouble = GameSprite("f66bb4d63b517c425adae2e4d66cd68a-removebg-preview.png",randint(0,600),randint(70,210),70,80,6) 
+            boubles.add(bouble)
+            bouble_count+=1
+
+        polka3=sprite.spritecollide(fish_yellow,boubles,True)
+        if polka3:
+            bouble = GameSprite("f66bb4d63b517c425adae2e4d66cd68a-removebg-preview.png",randint(0,600),randint(70,210),70,80,6) 
             boubles.add(bouble)
             bouble_count+=1
 
@@ -182,6 +207,14 @@ while game:
             fish_red.animation(redfish_list)
         if fish_red_update:
             fish_red.update()
+        fish_red.auto_swimm()
+
+        if yellow_show:
+            fish_yellow.animation(yellowfish_list)
+        if fish_yellow_update:
+            fish_yellow.update()
+        fish_yellow.auto_swimm()
+
     if shop:
         wn.blit(background_shop,(0,0))
         coin_icon.reset()
