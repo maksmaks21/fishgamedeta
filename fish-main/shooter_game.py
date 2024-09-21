@@ -93,7 +93,7 @@ class Player(GameSprite):
             if self.rect.x > 590:
                 self.speed *=-1
 
-bouble_count = 1000    
+bouble_count = 0    
 boubles = sprite.Group()
 for i in range(1):
     bouble = GameSprite("f66bb4d63b517c425adae2e4d66cd68a-removebg-preview.png",randint(0,600),210,70,80,6) 
